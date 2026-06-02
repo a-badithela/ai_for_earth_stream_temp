@@ -25,7 +25,7 @@ The three reservoirs (Cannonsville, Pepacton, Neversink) supply drinking water t
 
 Data files are **not included in this repository**. Download them from Google Drive and place them in the `data/` folder:
 
-> **Google Drive link**: *(instructor will share this)*
+> **Google Drive link**: 
 
 Each site has its own `.npz` file named `{site_id}.npz` (e.g., `data/1573.npz`).
 
@@ -80,9 +80,9 @@ day 360:    prediction target  → model output
 ```
 
 ### The ar1 feature and masking
-Column 12 (`stream_temp`) is the **autoregressive feature (ar1)** — the previous day's observed stream temperature. During the 360-day context window the model can see real past temperatures, which is legitimate. However, at the **forecast step** (day 360), the true temperature is what we are trying to predict — it must not be passed as input.
+Column 14 (`stream_temp`) is the **autoregressive feature (ar1)** — the previous day's observed stream temperature. During the 360-day context window the model can see real past temperatures, which is legitimate. However, at the **forecast step** (day 360), the true temperature is what we are trying to predict — it must not be passed as input.
 
-`data_loader.py` automatically zeros column 12 at all forecast-step positions before returning a batch. If you build your own data loading, you must do the same.
+`data_loader.py` automatically zeros column 14 at all forecast-step positions before returning a batch. If you build your own data loading, you must do the same.
 
 ### Train/validation split
 Always split time-series data **chronologically**, not randomly. The training set must contain only earlier dates; the validation set must contain only later dates. Random splits allow future information to leak into training, artificially inflating metrics.
@@ -126,52 +126,36 @@ pip install -r requirements.txt
 ### Task 1 — Local LSTM
 Train a separate LSTM for each of the 5 sites.
 
-1. Use `SiteDataset` and `train_val_split` from `data_loader.py` to create training and validation sets for one site.
-2. Implement your LSTM model (architecture, number of layers, hidden size — your choice).
+1. Use `StreamTempDataset` and `get_dataloaders` from `data_loader.py` to create training and validation sets for one site.
+2. Implement your LSTM model (number of layers, hidden size, different architectures!). 
 3. Normalize your features: fit a z-score scaler on the **training set only**, then apply it to train, val, and any test data.
 4. Train with MSE or RMSE loss. Evaluate on the validation set.
-5. Report RMSE for each forecast horizon (1-day, 4-day, 8-day ahead) per site.
+5. Report RMSE for each forecast horizon (1-day, 4-day, 8-day ahead) per site on the forecast data. (You will need to prepare the forecast similar to how the train set is prepared).
 6. Compare performance across sites — does the model perform better at some sites? Why?
 
 ### Task 2 — Global LSTM
 Train a single LSTM that generalizes across all 5 sites.
 
-1. Use `GlobalDataset` from `data_loader.py`. Each item now includes a `site_idx` (0–4).
-2. Design a strategy for site identity: options include a learned embedding, one-hot encoding concatenated to each timestep, or ignoring it entirely.
+2. Design a strategy for site identity: options include a random vector per site, one-hot encoding concatenated to each timestep, or ignoring it entirely.
 3. Train and evaluate using the same protocol as Task 1.
 4. Compare global vs local LSTM performance. When does the global model win?
 
 ### Deliverable
-A report (PDF or notebook) with:
 - Model architecture description and training setup
 - RMSE table for each site × forecast horizon (1, 4, 8 days) for both local and global LSTM
-- Discussion: how do meteorological drivers and reservoir releases relate to model errors?
 
----
-
-## Provided utilities (`data_loader.py`)
-
-```python
-from data_loader import load_site_npz, SiteDataset, GlobalDataset, train_val_split, get_dataloader
-
-# Single site
-X, Y, mask = load_site_npz(1573, data_dir='data/', split='finetune')
-dataset = SiteDataset(X, Y, sequence_length=360, forecast_horizon=1)
-train_ds, val_ds = train_val_split(dataset, val_ratio=0.2)
-train_loader = get_dataloader(train_ds, batch_size=32, shuffle=True)
-val_loader   = get_dataloader(val_ds,   batch_size=32, shuffle=False)
-
-# All 5 sites
-global_ds = GlobalDataset(data_dir='data/', split='finetune',
-                           sequence_length=360, forecast_horizon=1)
-# Each batch: context (B, 360, 13), future_X (B, horizon, 13), target (B, horizon), site_idx (B,)
-```
+Discussion: 
+- How do meteorological drivers and reservoir releases relate to model errors?
+- Are all features necessary for this task? 
+- Explore calculating loss on all targets vs observed targets only.
+- Explore providing a flag to indicate if a given target is observed to the model.
 
 ---
 
 ## Data sources
 
-- **Stream temperature observations**: USGS streamgages in the Delaware River Basin
+- **Stream temperature observations**: USGS streamgauges in the Delaware River Basin
 - **Meteorological drivers**: [GridMET](https://www.climatologylab.org/gridmet.html) — daily gridded surface meteorology for the contiguous US
 - **Reservoir operations**: USGS reservoir release records (Cannonsville, Pepacton, Neversink)
 - **Process-based baseline**: Dwallin stream temperature model (Zwart et al.)
+- **Forecasted Weather Drivers**: [Global Ensemble Forecast System](https://www.ncei.noaa.gov/products/weather-climate-models/global-ensemble-forecast) (NOAA)
