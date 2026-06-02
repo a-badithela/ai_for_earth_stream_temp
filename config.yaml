@@ -1,0 +1,36 @@
+sites:
+  1573: { reservoir: Cannonsville_Pepacton }
+  1571: { reservoir: Cannonsville }
+  1565: { reservoir: Cannonsville }
+  1450: { reservoir: Pepacton }
+  1641: { reservoir: Neversink }
+
+time_splits:
+  pretraining: { start: '1985-05-01', end: '2020-04-01' }
+  finetuning:  { start: '1985-05-01', end: '2021-04-14' }
+  forecasting: { start: '2021-04-16', end: '2021-09-30' }
+
+data:
+  data_dir: data/
+  sequence_length: 360       # days of historical context fed into the LSTM
+  forecast_horizon: 1        # days ahead to predict; valid values: 1 through 8
+  ar1_col: 14                # column index of stream_temp in X (last col) — zeroed at forecast steps
+
+features:
+  inputs:
+    - tmin                 # col 0:  daily min air temperature (°C, GridMET)
+    - tmax                 # col 1:  daily max air temperature (°C, GridMET)
+    - srad                 # col 2:  solar radiation (W/m², GridMET)
+    - pr                   # col 3:  precipitation (mm, GridMET)
+    - vs                   # col 4:  wind speed (m/s, GridMET)
+    - rmax                 # col 5:  relative humidity max (%, GridMET)
+    - rmin                 # col 6:  relative humidity min (%, GridMET)
+    - rmean                # col 7:  relative humidity mean (%, GridMET)
+    - spillway             # col 8:  spillway release from site's closest reservoir (cms)
+    - releases             # col 9:  controlled release from site's closest reservoir (cms)
+    - seg_slope            # col 10: stream segment slope (static site attribute)
+    - seg_elev             # col 11: segment elevation (static site attribute)
+    - seg_width            # col 12: segment width (static site attribute)
+    - seg_length           # col 13: segment length (static site attribute)
+    - stream_temp          # col 14: previous day's stream temp, ar1 — MASKED at forecast steps
+  target: stream_temp_next_day

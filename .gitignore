@@ -1,0 +1,25 @@
+# Data files — download from Google Drive (see README)
+data/*.npz
+data/*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model checkpoints and experiment outputs
+models/
+checkpoints/
+wandb/
+logs/
+runs/
+*.pt
+*.pth
+norm_information.npz
+
+# OS
+.DS_Store
+Thumbs.db
