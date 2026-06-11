@@ -148,7 +148,7 @@ Discussion:
 - How do meteorological drivers and reservoir releases relate to model errors?
 - Are all features necessary for this task? 
 - Explore calculating loss on all targets vs observed targets only.
-- Explore providing a flag to indicate if a given target is observed to the model.
+- Explore pretraining on process-based model outputs followed by finetuning on real-world temperature. 
 
 ---
 
