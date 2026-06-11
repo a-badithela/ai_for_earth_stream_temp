@@ -154,7 +154,7 @@ Discussion:
 
 ## Data sources
 
-- **Stream temperature observations**: USGS streamgauges in the Delaware River Basin
+- **Stream temperature observations**: [USGS streamgauges in the Delaware River Basin](https://onlinelibrary.wiley.com/doi/full/10.1111/1752-1688.13093)
 - **Meteorological drivers**: [GridMET](https://www.climatologylab.org/gridmet.html) — daily gridded surface meteorology for the contiguous US
 - **Reservoir operations**: USGS reservoir release records (Cannonsville, Pepacton, Neversink)
 - **Process-based baseline**: Dwallin stream temperature model (Zwart et al.)
