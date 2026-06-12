@@ -25,7 +25,7 @@ The three reservoirs (Cannonsville, Pepacton, Neversink) supply drinking water t
 
 Data files are **not included in this repository**. Download them from Google Drive and place them in the `data/` folder:
 
-> **Google Drive link**: 
+> [**Google Drive link**](https://drive.google.com/drive/folders/1G2aeNHnGHdKKKGWUETkiXF2fODNS0cMM?usp=sharing)
 
 Each site has its own `.npz` file named `{site_id}.npz` (e.g., `data/1573.npz`).
 
